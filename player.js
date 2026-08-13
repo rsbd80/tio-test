@@ -62,7 +62,163 @@ export var Player = {
         lastTap: 0, 
         viewIncremented: false,
         isFullscreen: false,
-        orientationHandler: null
+        fullscreenChangeHandler: null,
+        orientationHandler: null,
+        originalStyles: {},
+        isMobile: window.innerWidth < 768
+    },
+
+    // ✅ ফুলস্ক্রিন টগল - সব ডিভাইসের জন্য
+    toggleFullscreen: function() {
+        var playerWrapper = this.UI.playerWrapper;
+        var isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+        
+        if (isFullscreen) {
+            this.exitFullscreen();
+        } else {
+            this.enterFullscreen();
+        }
+    },
+
+    // ✅ ফুলস্ক্রিনে যান
+    enterFullscreen: function() {
+        var playerWrapper = this.UI.playerWrapper;
+        
+        // মোবাইলে রোটেটেড ভিউ চেক
+        if (this.state.isMobile && this.UI.playerWrapper.classList.contains('rotated-view')) {
+            this.UI.playerWrapper.classList.remove('rotated-view');
+            document.body.style.overflow = '';
+        }
+        
+        // নেটিভ ফুলস্ক্রিন API ব্যবহার
+        var requestFullscreen = playerWrapper.requestFullscreen || 
+                               playerWrapper.webkitRequestFullscreen || 
+                               playerWrapper.mozRequestFullScreen || 
+                               playerWrapper.msRequestFullscreen;
+        
+        if (requestFullscreen) {
+            requestFullscreen.call(playerWrapper).catch(function(err) {
+                console.warn('Fullscreen request failed:', err);
+                // ফলব্যাক: CSS ফুলস্ক্রিন
+                this.enterCSSFullscreen();
+            }.bind(this));
+        } else {
+            // ফলব্যাক: CSS ফুলস্ক্রিন
+            this.enterCSSFullscreen();
+        }
+        
+        this.state.isFullscreen = true;
+    },
+
+    // ✅ ফুলস্ক্রিন থেকে বের হন
+    exitFullscreen: function() {
+        if (document.fullscreenElement || document.webkitFullscreenElement) {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+        
+        // CSS ফুলস্ক্রিন ক্লিনআপ
+        this.exitCSSFullscreen();
+        
+        this.state.isFullscreen = false;
+        this.UI.playerWrapper.classList.remove('fullscreen-mode');
+        document.body.style.overflow = '';
+    },
+
+    // ✅ CSS ফুলস্ক্রিন (ফলব্যাক)
+    enterCSSFullscreen: function() {
+        var wrapper = this.UI.playerWrapper;
+        this.state.originalStyles = {
+            position: wrapper.style.position,
+            top: wrapper.style.top,
+            left: wrapper.style.left,
+            width: wrapper.style.width,
+            height: wrapper.style.height,
+            zIndex: wrapper.style.zIndex,
+            backgroundColor: wrapper.style.backgroundColor,
+            overflow: document.body.style.overflow
+        };
+        
+        wrapper.style.position = 'fixed';
+        wrapper.style.top = '0';
+        wrapper.style.left = '0';
+        wrapper.style.width = '100vw';
+        wrapper.style.height = '100vh';
+        wrapper.style.zIndex = '99999';
+        wrapper.style.backgroundColor = '#000';
+        document.body.style.overflow = 'hidden';
+        wrapper.classList.add('fullscreen-mode');
+    },
+
+    exitCSSFullscreen: function() {
+        var wrapper = this.UI.playerWrapper;
+        var styles = this.state.originalStyles;
+        
+        wrapper.style.position = styles.position || '';
+        wrapper.style.top = styles.top || '';
+        wrapper.style.left = styles.left || '';
+        wrapper.style.width = styles.width || '';
+        wrapper.style.height = styles.height || '';
+        wrapper.style.zIndex = styles.zIndex || '';
+        wrapper.style.backgroundColor = styles.backgroundColor || '';
+        document.body.style.overflow = styles.overflow || '';
+        wrapper.classList.remove('fullscreen-mode');
+    },
+
+    // ✅ ফুলস্ক্রিন ইভেন্ট লিসেনার
+    setupFullscreenListeners: function() {
+        var fullscreenChange = function() {
+            var isFullscreen = document.fullscreenElement || 
+                             document.webkitFullscreenElement || 
+                             document.mozFullScreenElement || 
+                             document.msFullscreenElement;
+            
+            if (!isFullscreen && this.state.isFullscreen) {
+                this.state.isFullscreen = false;
+                this.UI.playerWrapper.classList.remove('fullscreen-mode');
+                document.body.style.overflow = '';
+                this.exitCSSFullscreen();
+                this.updateFullscreenButton(false);
+            } else if (isFullscreen) {
+                this.state.isFullscreen = true;
+                this.UI.playerWrapper.classList.add('fullscreen-mode');
+                document.body.style.overflow = 'hidden';
+                this.updateFullscreenButton(true);
+            }
+        }.bind(this);
+
+        document.addEventListener('fullscreenchange', fullscreenChange);
+        document.addEventListener('webkitfullscreenchange', fullscreenChange);
+        document.addEventListener('mozfullscreenchange', fullscreenChange);
+        document.addEventListener('MSFullscreenChange', fullscreenChange);
+        
+        this.state.fullscreenChangeHandler = fullscreenChange;
+    },
+
+    // ✅ ফুলস্ক্রিন বাটন আপডেট
+    updateFullscreenButton: function(isFullscreen) {
+        var buttons = this.UI.playerWrapper.querySelectorAll('.fullscreen-toggle-btn');
+        buttons.forEach(function(btn) {
+            if (isFullscreen) {
+                btn.innerHTML = '<img src="' + PlayerIcons.exitFullscreen + '" alt="Exit Fullscreen" style="width:20px;height:20px;filter:brightness(0) invert(1);">';
+                btn.title = 'Exit Fullscreen';
+            } else {
+                btn.innerHTML = '<img src="' + PlayerIcons.fullscreen + '" alt="Fullscreen" style="width:20px;height:20px;filter:brightness(0) invert(1);">';
+                btn.title = 'Fullscreen';
+            }
+        });
+    },
+
+    // ✅ মোবাইল চেক আপডেট
+    updateDeviceCheck: function() {
+        this.state.isMobile = window.innerWidth < 768;
     },
 
     incrementViewCount: async function(docRef) {
@@ -82,110 +238,14 @@ export var Player = {
         }
     },
 
-    // ✅ ফুলস্ক্রিন টগল - ডেস্কটপ/টিভির জন্য
-    toggleNativeFullscreen: function() {
-        var playerWrapper = this.UI.playerWrapper;
-        var isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
-        
-        if (isFullscreen) {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            }
-            this.state.isFullscreen = false;
-            this.UI.playerWrapper.classList.remove('fullscreen-mode');
-            document.body.style.overflow = '';
-        } else {
-            var requestFullscreen = playerWrapper.requestFullscreen || playerWrapper.webkitRequestFullscreen;
-            if (requestFullscreen) {
-                requestFullscreen.call(playerWrapper);
-                this.state.isFullscreen = true;
-                this.UI.playerWrapper.classList.add('fullscreen-mode');
-                document.body.style.overflow = 'hidden';
-            }
-        }
-    },
-
-    // ✅ রোটেটেড ভিউ টগল - শুধুমাত্র মোবাইলের জন্য
-    toggleRotatedView: function() {
-        // ইউটিউব ফুলস্ক্রিন চেক
-        if (this.state.isYouTube) {
-            var iframe = document.getElementById('youtube-iframe');
-            if (iframe && (document.fullscreenElement === iframe || document.webkitFullscreenElement === iframe)) {
-                return;
-            }
-        }
-        
-        // ✅ ডেস্কটপ/টিভি চেক - 768px এর বেশি হলে ফুলস্ক্রিন ব্যবহার করুন
-        if (window.innerWidth >= 768) {
-            this.toggleNativeFullscreen();
-            return;
-        }
-        
-        // মোবাইলের জন্য rotated-view
-        var isRotated = this.UI.playerWrapper.classList.toggle('rotated-view');
-        document.body.style.overflow = isRotated ? 'hidden' : '';
-        
-        // UI আপডেট
-        this.updateRotateButtons(isRotated);
-        
-        // ওরিয়েন্টেশন চেঞ্জ হ্যান্ডলার
-        if (isRotated) {
-            this.setupOrientationHandler();
-        } else {
-            this.removeOrientationHandler();
-        }
-    },
-
-    // ✅ রোটেট বাটন আপডেট
-    updateRotateButtons: function(isRotated) {
-        var enterBtn = this.UI.playerWrapper.querySelector('.enter-rotated-view-btn');
-        var closeBtn = this.UI.playerWrapper.querySelector('.close-rotated-view-btn');
-        
-        if (enterBtn) {
-            enterBtn.innerHTML = isRotated ? 
-                '<img src="' + PlayerIcons.exitFullscreen + '" alt="Exit Fullscreen" style="width:20px;height:20px;filter:brightness(0) invert(1);">' :
-                '<img src="' + PlayerIcons.fullscreen + '" alt="Fullscreen" style="width:20px;height:20px;filter:brightness(0) invert(1);">';
-            enterBtn.title = isRotated ? 'Exit Rotated View' : 'Rotate View';
-        }
-        
-        if (closeBtn) {
-            closeBtn.style.display = isRotated ? 'flex' : 'none';
-        }
-    },
-
-    // ✅ ওরিয়েন্টেশন হ্যান্ডলার
-    setupOrientationHandler: function() {
-        this.removeOrientationHandler();
-        this.state.orientationHandler = function() {
-            if (this.UI.playerWrapper.classList.contains('rotated-view')) {
-                var isPortrait = window.innerHeight > window.innerWidth;
-                if (isPortrait) {
-                    this.UI.playerWrapper.style.transform = 'rotate(90deg)';
-                } else {
-                    this.UI.playerWrapper.style.transform = 'rotate(0deg)';
-                }
-            }
-        }.bind(this);
-        
-        window.addEventListener('orientationchange', this.state.orientationHandler);
-        window.addEventListener('resize', this.state.orientationHandler);
-    },
-
-    removeOrientationHandler: function() {
-        if (this.state.orientationHandler) {
-            window.removeEventListener('orientationchange', this.state.orientationHandler);
-            window.removeEventListener('resize', this.state.orientationHandler);
-            this.state.orientationHandler = null;
-        }
-        this.UI.playerWrapper.style.transform = '';
-    },
-
     init: function(id) {
         this.cleanupPlayer();
+        this.updateDeviceCheck();
         this.state.viewIncremented = false;
         this.state.playerType = id.startsWith('moviesSections/') ? 'movie' : 'live';
+        
+        // ফুলস্ক্রিন লিসেনার সেটআপ
+        this.setupFullscreenListeners();
         
         if (id.startsWith('youtube/')) {
             this.initYouTubeVideo(id.split('/')[1]);
@@ -354,7 +414,7 @@ export var Player = {
                 this.setupYouTubeFullscreenHandler();
             }
 
-            this.addRotatedViewButtons();
+            this.addFullscreenButtons();
             this.state.currentVideoElement = null;
         } else {
             this.UI.playerWrapper.classList.remove('loading');
@@ -386,12 +446,14 @@ export var Player = {
     },
 
     setupLiveTvControls: function(video) {
-        var closeBtn = document.createElement('button');
-        closeBtn.className = 'view-mode-btn close-rotated-view-btn';
-        closeBtn.innerHTML = '<img src="' + PlayerIcons.exitFullscreen + '" alt="Exit Fullscreen" style="width: 20px; height: 20px; filter: brightness(0) invert(1);">';
-        closeBtn.style.display = 'none';
-        closeBtn.onclick = function(e) { e.stopPropagation();
-            this.toggleRotatedView(); }.bind(this);
+        // ফুলস্ক্রিন বাটন
+        var fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'view-mode-btn fullscreen-toggle-btn';
+        fullscreenBtn.innerHTML = '<img src="' + PlayerIcons.fullscreen + '" alt="Fullscreen" style="width:20px;height:20px;filter:brightness(0) invert(1);">';
+        fullscreenBtn.onclick = function(e) { 
+            e.stopPropagation();
+            this.toggleFullscreen(); 
+        }.bind(this);
 
         var controlsHTML = 
             '<div id="custom-controls-overlay" class="visible"><button id="custom-play-pause-btn"><img src="' + PlayerIcons.play + '" alt="Play"></button></div>' +
@@ -400,17 +462,25 @@ export var Player = {
             '<div class="live-controls-right">' +
             '<button id="fit-screen-btn" class="player-control-btn"><img src="' + PlayerIcons.fitScreen + '" alt="Fit Screen"></button>' +
             '<button id="settings-btn" class="player-control-btn"><img src="' + PlayerIcons.settings + '" alt="Settings"></button>' +
-            '<button class="enter-rotated-view-btn player-control-btn"><img src="' + PlayerIcons.fullscreen + '" alt="Fullscreen"></button>' +
+            '<button class="fullscreen-toggle-btn player-control-btn"><img src="' + PlayerIcons.fullscreen + '" alt="Fullscreen"></button>' +
             '</div></div>';
             
-        this.UI.playerWrapper.appendChild(closeBtn);
+        this.UI.playerWrapper.appendChild(fullscreenBtn);
         this.UI.playerWrapper.insertAdjacentHTML('beforeend', controlsHTML);
 
         var centerPlayPauseBtn = document.getElementById('custom-play-pause-btn');
-        var rotateBtn = this.UI.playerWrapper.querySelector('.enter-rotated-view-btn');
         var settingsBtn = document.getElementById('settings-btn');
         var settingsPanel = document.getElementById('settings-panel');
         var fitScreenBtn = document.getElementById('fit-screen-btn');
+
+        // সব ফুলস্ক্রিন বাটন সেটআপ
+        var allFullscreenBtns = this.UI.playerWrapper.querySelectorAll('.fullscreen-toggle-btn');
+        allFullscreenBtns.forEach(function(btn) {
+            btn.onclick = function(e) { 
+                e.stopPropagation();
+                this.toggleFullscreen(); 
+            }.bind(this);
+        }.bind(this));
 
         var togglePlay = function() { video.paused ? video.play() : video.pause(); };
         
@@ -431,8 +501,6 @@ export var Player = {
 
         centerPlayPauseBtn.addEventListener('click', function(e) { e.stopPropagation();
             togglePlay(); });
-        rotateBtn.onclick = function(e) { e.stopPropagation();
-            this.toggleRotatedView(); }.bind(this);
         settingsBtn.addEventListener('click', function(e) { e.stopPropagation();
             settingsPanel.classList.toggle('visible'); });
         fitScreenBtn.onclick = function(e) { e.stopPropagation();
@@ -442,12 +510,14 @@ export var Player = {
     },
 
     setupMovieControls: function(video) {
-        var closeBtn = document.createElement('button');
-        closeBtn.className = 'view-mode-btn close-rotated-view-btn';
-        closeBtn.innerHTML = '<img src="' + PlayerIcons.exitFullscreen + '" alt="Exit Fullscreen" style="width: 20px; height: 20px; filter: brightness(0) invert(1);">';
-        closeBtn.style.display = 'none';
-        closeBtn.onclick = function(e) { e.stopPropagation();
-            this.toggleRotatedView(); }.bind(this);
+        // ফুলস্ক্রিন বাটন
+        var fullscreenBtn = document.createElement('button');
+        fullscreenBtn.className = 'view-mode-btn fullscreen-toggle-btn';
+        fullscreenBtn.innerHTML = '<img src="' + PlayerIcons.fullscreen + '" alt="Fullscreen" style="width:20px;height:20px;filter:brightness(0) invert(1);">';
+        fullscreenBtn.onclick = function(e) { 
+            e.stopPropagation();
+            this.toggleFullscreen(); 
+        }.bind(this);
 
         var controlsHTML = 
             '<div id="double-tap-overlay"><div class="tap-zone" id="tap-rewind"></div><div class="tap-zone" id="tap-forward"></div></div>' +
@@ -456,11 +526,20 @@ export var Player = {
             '<div id="progress-container"> <div id="progress-bar-wrapper"> <div id="progress-buffered"></div> <div id="progress-played"></div> <input type="range" id="progress-bar" value="0" min="0" step="1"> </div> </div>' +
             '<div class="controls-bottom-bar">' +
             '<div class="controls-left"> <button id="play-pause-btn" class="player-control-btn"><img src="' + PlayerIcons.play + '" alt="Play"></button> <span id="time-display">00:00 / 00:00</span> </div>' +
-            '<div class="controls-right"> <button id="fit-screen-btn" class="player-control-btn"><img src="' + PlayerIcons.fitScreen + '" alt="Fit Screen"></button> <button class="enter-rotated-view-btn player-control-btn"><img src="' + PlayerIcons.fullscreen + '" alt="Fullscreen"></button> </div>' +
+            '<div class="controls-right"> <button id="fit-screen-btn" class="player-control-btn"><img src="' + PlayerIcons.fitScreen + '" alt="Fit Screen"></button> <button class="fullscreen-toggle-btn player-control-btn"><img src="' + PlayerIcons.fullscreen + '" alt="Fullscreen"></button> </div>' +
             '</div></div>';
             
-        this.UI.playerWrapper.appendChild(closeBtn);
+        this.UI.playerWrapper.appendChild(fullscreenBtn);
         this.UI.playerWrapper.insertAdjacentHTML('beforeend', controlsHTML);
+
+        // সব ফুলস্ক্রিন বাটন সেটআপ
+        var allFullscreenBtns = this.UI.playerWrapper.querySelectorAll('.fullscreen-toggle-btn');
+        allFullscreenBtns.forEach(function(btn) {
+            btn.onclick = function(e) { 
+                e.stopPropagation();
+                this.toggleFullscreen(); 
+            }.bind(this);
+        }.bind(this));
 
         var centerPlayPauseBtn = document.getElementById('custom-play-pause-btn');
         var playPauseBtn = document.getElementById('play-pause-btn');
@@ -468,7 +547,6 @@ export var Player = {
         var progressBuffered = document.getElementById('progress-buffered');
         var progressPlayed = document.getElementById('progress-played');
         var timeDisplay = document.getElementById('time-display');
-        var rotateBtn = this.UI.playerWrapper.querySelector('.enter-rotated-view-btn');
         var fitScreenBtn = document.getElementById('fit-screen-btn');
         var tapRewind = document.getElementById('tap-rewind');
         var tapForward = document.getElementById('tap-forward');
@@ -515,12 +593,15 @@ export var Player = {
             }
         });
 
-        playPauseBtn.onclick = centerPlayPauseBtn.onclick = rotateBtn.onclick = fitScreenBtn.onclick = function(e) {
+        playPauseBtn.onclick = centerPlayPauseBtn.onclick = function(e) {
             e.stopPropagation();
-            if (e.currentTarget === playPauseBtn || e.currentTarget === centerPlayPauseBtn) togglePlay();
-            else if (e.currentTarget === rotateBtn) this.toggleRotatedView();
-            else if (e.currentTarget === fitScreenBtn) video.classList.toggle('video-fit-cover');
-        }.bind(this);
+            togglePlay();
+        };
+        
+        fitScreenBtn.onclick = function(e) { 
+            e.stopPropagation();
+            video.classList.toggle('video-fit-cover'); 
+        };
 
         progressBar.addEventListener('mousedown', function() { this.state.isScrubbing = true; }.bind(this));
         progressBar.addEventListener('mouseup', function() { this.state.isScrubbing = false; }.bind(this));
@@ -587,62 +668,175 @@ export var Player = {
         this.state.tapHandler = handleTap;
     },
 
-    addRotatedViewButtons: function() {
-        var closeBtn = document.createElement('button');
-        closeBtn.className = 'view-mode-btn close-rotated-view-btn';
-        closeBtn.innerHTML = '<img src="' + PlayerIcons.exitFullscreen + '" alt="Exit Fullscreen" style="width:20px;height:20px;filter:brightness(0) invert(1);">';
-        closeBtn.style.display = 'none';
-        closeBtn.onclick = function(e) { e.stopPropagation();
-            this.toggleRotatedView(); }.bind(this);
-
+    addFullscreenButtons: function() {
+        // এন্টার ফুলস্ক্রিন বাটন
         var enterBtn = document.createElement('button');
-        enterBtn.className = 'view-mode-btn enter-rotated-view-btn';
+        enterBtn.className = 'view-mode-btn fullscreen-toggle-btn';
         enterBtn.innerHTML = '<img src="' + PlayerIcons.fullscreen + '" alt="Fullscreen" style="width:20px;height:20px;filter:brightness(0) invert(1);">';
-        enterBtn.onclick = function(e) { e.stopPropagation();
-            this.toggleRotatedView(); }.bind(this);
+        enterBtn.onclick = function(e) { 
+            e.stopPropagation();
+            this.toggleFullscreen(); 
+        }.bind(this);
 
-        this.UI.playerWrapper.appendChild(closeBtn);
         this.UI.playerWrapper.appendChild(enterBtn);
     },
 
-    toggleRotatedView: function() {
-        if (this.state.isYouTube) {
-            var iframe = document.getElementById('youtube-iframe');
-            if (iframe && (document.fullscreenElement === iframe || document.webkitFullscreenElement === iframe)) {
-                return;
-            }
-        }
+    toggleFullscreen: function() {
+        var playerWrapper = this.UI.playerWrapper;
+        var isFullscreen = document.fullscreenElement || 
+                          document.webkitFullscreenElement || 
+                          document.mozFullScreenElement || 
+                          document.msFullscreenElement;
         
-        // ✅ ডেস্কটপ/টিভি চেক - 768px এর বেশি হলে ফুলস্ক্রিন ব্যবহার করুন
-        if (window.innerWidth >= 768) {
-            this.toggleNativeFullscreen();
-            return;
-        }
-        
-        // মোবাইলের জন্য rotated-view
-        var isRotated = this.UI.playerWrapper.classList.toggle('rotated-view');
-        document.body.style.overflow = isRotated ? 'hidden' : '';
-        
-        // UI আপডেট
-        this.updateRotateButtons(isRotated);
-        
-        // ওরিয়েন্টেশন চেঞ্জ হ্যান্ডলার
-        if (isRotated) {
-            this.setupOrientationHandler();
+        if (isFullscreen) {
+            this.exitFullscreen();
         } else {
-            this.removeOrientationHandler();
+            this.enterFullscreen();
         }
     },
 
-    cleanupPlayer: function() {
-        // ফুলস্ক্রিন থেকে বের হন যদি খোলা থাকে
-        if (document.fullscreenElement || document.webkitFullscreenElement) {
+    enterFullscreen: function() {
+        var playerWrapper = this.UI.playerWrapper;
+        
+        // মোবাইলে রোটেটেড ভিউ চেক
+        if (this.state.isMobile && this.UI.playerWrapper.classList.contains('rotated-view')) {
+            this.UI.playerWrapper.classList.remove('rotated-view');
+            document.body.style.overflow = '';
+        }
+        
+        // নেটিভ ফুলস্ক্রিন API ব্যবহার
+        var requestFullscreen = playerWrapper.requestFullscreen || 
+                               playerWrapper.webkitRequestFullscreen || 
+                               playerWrapper.mozRequestFullScreen || 
+                               playerWrapper.msRequestFullscreen;
+        
+        if (requestFullscreen) {
+            requestFullscreen.call(playerWrapper).catch(function(err) {
+                console.warn('Fullscreen request failed:', err);
+                this.enterCSSFullscreen();
+            }.bind(this));
+        } else {
+            this.enterCSSFullscreen();
+        }
+        
+        this.state.isFullscreen = true;
+        this.updateFullscreenButton(true);
+    },
+
+    exitFullscreen: function() {
+        if (document.fullscreenElement || document.webkitFullscreenElement || 
+            document.mozFullScreenElement || document.msFullscreenElement) {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
             } else if (document.webkitExitFullscreen) {
                 document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
             }
         }
+        
+        this.exitCSSFullscreen();
+        this.state.isFullscreen = false;
+        this.UI.playerWrapper.classList.remove('fullscreen-mode');
+        document.body.style.overflow = '';
+        this.updateFullscreenButton(false);
+    },
+
+    enterCSSFullscreen: function() {
+        var wrapper = this.UI.playerWrapper;
+        this.state.originalStyles = {
+            position: wrapper.style.position,
+            top: wrapper.style.top,
+            left: wrapper.style.left,
+            width: wrapper.style.width,
+            height: wrapper.style.height,
+            zIndex: wrapper.style.zIndex,
+            backgroundColor: wrapper.style.backgroundColor,
+            overflow: document.body.style.overflow
+        };
+        
+        wrapper.style.position = 'fixed';
+        wrapper.style.top = '0';
+        wrapper.style.left = '0';
+        wrapper.style.width = '100vw';
+        wrapper.style.height = '100vh';
+        wrapper.style.zIndex = '99999';
+        wrapper.style.backgroundColor = '#000';
+        document.body.style.overflow = 'hidden';
+        wrapper.classList.add('fullscreen-mode');
+    },
+
+    exitCSSFullscreen: function() {
+        var wrapper = this.UI.playerWrapper;
+        var styles = this.state.originalStyles;
+        
+        wrapper.style.position = styles.position || '';
+        wrapper.style.top = styles.top || '';
+        wrapper.style.left = styles.left || '';
+        wrapper.style.width = styles.width || '';
+        wrapper.style.height = styles.height || '';
+        wrapper.style.zIndex = styles.zIndex || '';
+        wrapper.style.backgroundColor = styles.backgroundColor || '';
+        document.body.style.overflow = styles.overflow || '';
+        wrapper.classList.remove('fullscreen-mode');
+    },
+
+    setupFullscreenListeners: function() {
+        var fullscreenChange = function() {
+            var isFullscreen = document.fullscreenElement || 
+                             document.webkitFullscreenElement || 
+                             document.mozFullScreenElement || 
+                             document.msFullscreenElement;
+            
+            if (!isFullscreen && this.state.isFullscreen) {
+                this.state.isFullscreen = false;
+                this.UI.playerWrapper.classList.remove('fullscreen-mode');
+                document.body.style.overflow = '';
+                this.exitCSSFullscreen();
+                this.updateFullscreenButton(false);
+            } else if (isFullscreen) {
+                this.state.isFullscreen = true;
+                this.UI.playerWrapper.classList.add('fullscreen-mode');
+                document.body.style.overflow = 'hidden';
+                this.updateFullscreenButton(true);
+            }
+        }.bind(this);
+
+        document.addEventListener('fullscreenchange', fullscreenChange);
+        document.addEventListener('webkitfullscreenchange', fullscreenChange);
+        document.addEventListener('mozfullscreenchange', fullscreenChange);
+        document.addEventListener('MSFullscreenChange', fullscreenChange);
+        
+        this.state.fullscreenChangeHandler = fullscreenChange;
+    },
+
+    updateFullscreenButton: function(isFullscreen) {
+        var buttons = this.UI.playerWrapper.querySelectorAll('.fullscreen-toggle-btn');
+        buttons.forEach(function(btn) {
+            if (isFullscreen) {
+                btn.innerHTML = '<img src="' + PlayerIcons.exitFullscreen + '" alt="Exit Fullscreen" style="width:20px;height:20px;filter:brightness(0) invert(1);">';
+                btn.title = 'Exit Fullscreen';
+            } else {
+                btn.innerHTML = '<img src="' + PlayerIcons.fullscreen + '" alt="Fullscreen" style="width:20px;height:20px;filter:brightness(0) invert(1);">';
+                btn.title = 'Fullscreen';
+            }
+        });
+    },
+
+    cleanupPlayer: function() {
+        // ফুলস্ক্রিন লিসেনার ক্লিনআপ
+        if (this.state.fullscreenChangeHandler) {
+            document.removeEventListener('fullscreenchange', this.state.fullscreenChangeHandler);
+            document.removeEventListener('webkitfullscreenchange', this.state.fullscreenChangeHandler);
+            document.removeEventListener('mozfullscreenchange', this.state.fullscreenChangeHandler);
+            document.removeEventListener('MSFullscreenChange', this.state.fullscreenChangeHandler);
+            this.state.fullscreenChangeHandler = null;
+        }
+        
+        // ফুলস্ক্রিন থেকে বের হন
+        this.exitFullscreen();
         
         if (this.state.youtubeFullscreenCleanup) {
             this.state.youtubeFullscreenCleanup();
