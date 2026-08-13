@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport" />
+    <title>Rs Live Tv - The Unlimited Entertainment Here</title>
+    
+    <!-- ===== মেটা ট্যাগ (SEO) ===== -->
+    <meta name="description" content="Rs Live Tv - Watch Live TV, Movies, Cricket, Shorts and more. Unlimited entertainment at your fingertips." />
+    <meta name="keywords" content="Rs Live Tv, live tv, movies, cricket, shorts, reels, sports, entertainment, bangladesh tv, indian tv" />
+    <meta name="author" content="Rs Live Tv" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://rslive-tv-app-download.vercel.app/" />
+    
+    <!-- ===== ফুলস্ক্রিন অ্যাপ মেটা ===== -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="full-screen" content="yes" />
+    <meta name="x5-fullscreen" content="true" />
+    <meta name="360-fullscreen" content="true" />
+    <meta name="apple-touch-fullscreen" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Rs Live Tv" />
+    
+    <!-- ===== Manifest ===== -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/mD1VCt2C/RS-Live.png" />
+    
+    <!-- ===== Open Graph (Facebook) ===== -->
+    <meta property="og:title" content="Rs Live Tv - Unlimited Entertainment" />
+    <meta property="og:description" content="Watch Live TV, Movies, Cricket, Shorts and more on Rs Live Tv." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://rslive-tv-app-download.vercel.app/" />
+    <meta property="og:image" content="https://i.postimg.cc/mD1VCt2C/RS-Live.png" />
+    
+    <!-- ===== Twitter Card ===== -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Rs Live Tv - Unlimited Entertainment" />
+    <meta name="twitter:description" content="Watch Live TV, Movies, Cricket, Shorts and more on Rs Live Tv." />
+    <meta name="twitter:image" content="https://i.postimg.cc/mD1VCt2C/RS-Live.png" />
+    
+    <!-- ===== Google Analytics ===== -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DRBZH98TKH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-DRBZH98TKH);
+    </script>
+    
+    <!-- ===== সিকিউরিটি হেডার ===== -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta name="referrer" content="no-referrer-when-downgrade" />
+    
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ============================================
+           INTRO SPLASH SCREEN - আপডেটেড এনিমেশন
+           ============================================ */
+        #intro-splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 999999;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0a 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        #intro-splash.hide {
+            opacity: 0;
+            transform: scale(1.1);
+            pointer-events: none;
+        }
+
+        /* ===== লোগো এনিমেশন ===== */
+        .splash-logo {
+            width: 120px;
+            height: 120px;
+            border-radius: 30px;
+            object-fit: cover;
+            border: 4px solid rgba(231, 76, 60, 0.3);
+            box-shadow: 0 0 60px rgba(231, 76, 60, 0.15);
+            animation: logoFloat 2.5s ease-in-out infinite;
+        }
+        @keyframes logoFloat {
+            0% { transform: translateY(0) scale(1); box-shadow: 0 0 60px rgba(231, 76, 60, 0.15); }
+            50% { transform: translateY(-15px) scale(1.03); box-shadow: 0 0 80px rgba(231, 76, 60, 0.25); }
+            100% { transform: translateY(0) scale(1); box-shadow: 0 0 60px rgba(231, 76, 60, 0.15); }
+        }
+
+        /* ===== টাইটেল এনিমেশন ===== */
+        .splash-title {
+            font-size: 42px;
+            font-weight: 900;
+            margin-top: 20px;
+            color: #ffffff;
+            letter-spacing: -1px;
+            animation: titlePulse 2.5s ease-in-out infinite;
+        }
+        @keyframes titlePulse {
+            0% { filter: drop-shadow(0 0 10px rgba(231, 76, 60, 0.3)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 40px rgba(231, 76, 60, 0.6)); transform: scale(1.02); }
+            100% { filter: drop-shadow(0 0 10px rgba(231, 76, 60, 0.3)); transform: scale(1); }
+        }
+
+        /* ===== সাবটাইটেল এনিমেশন ===== */
+        .splash-subtitle {
+            color: #888;
+            font-size: 16px;
+            margin-top: 8px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.5s forwards;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== ডট লোডার এনিমেশন ===== */
+        .splash-loader {
+            margin-top: 40px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 0.8s forwards;
+        }
+        .splash-loader .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #e74c3c;
+            animation: dotBounce 1.4s ease-in-out infinite both;
+        }
+        .splash-loader .dot:nth-child(1) { animation-delay: -0.32s; }
+        .splash-loader .dot:nth-child(2) { animation-delay: -0.16s; }
+        .splash-loader .dot:nth-child(3) { animation-delay: 0s; }
+        @keyframes dotBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* ===== প্রোগ্রেস বার এনিমেশন ===== */
+        .splash-progress {
+            margin-top: 30px;
+            width: 200px;
+            height: 3px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 1s forwards;
+        }
+        .splash-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #e74c3c, #ff6b6b, #e74c3c);
+            background-size: 200% 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            animation: shimmerProgress 1.5s linear infinite;
+        }
+        @keyframes shimmerProgress {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ===== ভার্সন টেক্সট এনিমেশন ===== */
+        .splash-version {
+            position: absolute;
+            bottom: 40px;
+            color: #555;
+            font-size: 12px;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeInUp 0.6s ease 1.2s forwards;
+        }
+
+        /* ===== অতিরিক্ত ডেকোরেটিভ সার্কেল ===== */
+        .splash-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(231,76,60,0.05);
+            animation: ringExpand 4s ease-out infinite;
+        }
+        .splash-ring:nth-child(1) {
+            width: 300px;
+            height: 300px;
+            animation-delay: 0s;
+        }
+        .splash-ring:nth-child(2) {
+            width: 450px;
+            height: 450px;
+            animation-delay: 1.5s;
+        }
+        .splash-ring:nth-child(3) {
+            width: 600px;
+            height: 600px;
+            animation-delay: 3s;
+        }
+        @keyframes ringExpand {
+            0% { transform: scale(0.8); opacity: 0.6; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        /* ===== কালার ভেরিয়েবল ===== */
+        :root {
+            --primary-red: #e74c3c;
+            --primary-red-dark: #c0392b;
+            --bg-dark: #0d0d0d;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #cccccc;
+            --text-light: #aaaaaa;
+            --border-light: rgba(255,255,255,0.06);
+        }
+
+        /* ===== সব পেজের সব টেক্সট সেন্টার ===== */
+        #home-sections-container,
+        #cricket-page,
+        #movies-page,
+        #shorts-page,
+        #home-sections-container *,
+        #cricket-page *,
+        #movies-page *,
+        #shorts-page * {
+            text-align: center !important;
+        }
+
+        /* ব্যানার সম্পূর্ণ অদৃশ্য */
+        #ad-container {
+            display: none !important;
+        }
+
+        /* ===== সাইটবার (ড্রয়ার) ===== */
+        .drawer-header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 18px;
+            border-bottom: 1px solid var(--border-light);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .drawer-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .drawer-logo-img {
+            height: 48px;
+            width: 48px;
+            border-radius: 12px;
+            object-fit: cover;
+            border: 2px solid var(--border-light);
+            flex-shrink: 0;
+        }
+
+        .drawer-brand-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0px;
+        }
+
+        .drawer-brand-logo {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .drawer-tagline {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+            margin-top: -2px;
+        }
+
+        .drawer-link {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            transition: 0.2s;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .drawer-link:hover {
+            background: #2a2a2a;
+            color: var(--text-primary);
+        }
+        .drawer-link i {
+            width: 24px;
+            text-align: center;
+            color: var(--primary-red);
+        }
+
+        /* ডিভাইডার - হালকা সাদা */
+        .drawer-divider {
+            border-color: var(--border-light) !important;
+        }
+
+        /* পপআপ স্টাইল */
+        .custom-popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 99999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        .custom-popup.active {
+            display: flex;
+        }
+        .popup-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 30px 24px;
+            max-width: 360px;
+            width: 90%;
+            text-align: center;
+            border: 2px solid var(--primary-red);
+            box-shadow: 0 0 40px rgba(231, 76, 60, 0.15);
+        }
+        .popup-content h3 {
+            color: var(--text-primary);
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .popup-content p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .popup-content .popup-icon {
+            font-size: 48px;
+            color: var(--primary-red);
+            margin-bottom: 10px;
+            display: block;
+        }
+        .popup-close-btn {
+            background: var(--primary-red);
+            color: #ffffff;
+            font-weight: 700;
+            padding: 8px 28px;
+            border-radius: 30px;
+            border: 2px solid var(--primary-red);
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 15px;
+        }
+        .popup-close-btn:hover {
+            background: var(--primary-red-dark);
+            border-color: var(--primary-red-dark);
+            transform: scale(1.02);
+        }
+
+        /* হেডার – নাম বাদ, শুধু বার এবং সার্চ */
+        #main-header .header-brand-text {
+            display: none !important;
+        }
+
+        /* ===== ফুডার টেক্সট ===== */
+        .version-text {
+            color: var(--text-light) !important;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+        .version-text strong {
+            color: var(--text-light) !important;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== নেভিগেশন বাটন ===== */
+        .bottom-nav .nav-button.active {
+            color: var(--primary-red) !important;
+        }
+        .bottom-nav .nav-button.active .nav-icon {
+            color: var(--primary-red) !important;
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-red);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .drawer-brand-logo {
+                font-size: 22px;
+            }
+            .drawer-logo-img {
+                height: 40px;
+                width: 40px;
+            }
+            .drawer-tagline {
+                font-size: 10px;
+            }
+            .splash-title {
+                font-size: 28px;
+            }
+            .splash-logo {
+                width: 80px;
+                height: 80px;
+            }
+            .splash-progress {
+                width: 140px;
+            }
+            .splash-ring:nth-child(1) { width: 200px; height: 200px; }
+            .splash-ring:nth-child(2) { width: 300px; height: 300px; }
+            .splash-ring:nth-child(3) { width: 400px; height: 400px; }
+        }
+
+        /* ===== সিকিউরিটি স্টাইল ===== */
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        input, textarea {
+            -webkit-user-select: text;
+            user-select: text;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* ===== অ্যাপ শো ===== */
+        #app-shell {
+            display: none;
+        }
+        #app-shell.visible {
+            display: block;
+        }
+
+        /* ===== SHORTS পেজ স্টাইল (iframe এর জন্য) ===== */
+        #shorts-page {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: calc(100vh - 70px);
+            position: relative;
+        }
+        #shorts-page iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #000;
+            display: block;
+        }
+        @media (max-width: 480px) {
+            #shorts-page {
+                height: calc(100vh - 60px);
+            }
+        }
+
+        /* ============================================
+           ফুলস্ক্রিন অ্যাপ স্টাইল
+           ============================================ */
+        .app-mode {
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        /* ফুলস্ক্রিন বাটন পুরোপুরি রিমুভ করা হয়েছে */
+    </style>
+</head>
+<body>
+
+    <!-- ============================================
+    INTRO SPLASH SCREEN - আপডেটেড এনিমেশন
+    ============================================ -->
+    <div id="intro-splash">
+        <!-- ডেকোরেটিভ রিং -->
+        <div class="splash-ring"></div>
+        <div class="splash-ring"></div>
+        <div class="splash-ring"></div>
+        
+        <img src="https://i.postimg.cc/mD1VCt2C/RS-Live.png" alt="Rs Live Tv" class="splash-logo">
+        <h1 class="splash-title">Rs Live Tv</h1>
+        <p class="splash-subtitle">Unlimited Entertainment</p>
+        <div class="splash-loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <div class="splash-progress">
+            <div class="splash-progress-bar" id="splashProgressBar"></div>
+        </div>
+        <span class="splash-version">Version 4.1</span>
+    </div>
+
+    <!-- ===== কাস্টম পপআপ ===== -->
+    <div id="custom-popup" class="custom-popup">
+        <div class="popup-content">
+            <span class="popup-icon" id="popup-icon"><i class="fas fa-gamepad"></i></span>
+            <h3 id="popup-title">Games Zone</h3>
+            <p id="popup-desc">🎮 This feature will be available soon. Stay tuned for exciting games!</p>
+            <button class="popup-close-btn" id="popup-close-btn">Close</button>
+        </div>
+    </div>
+
+    <!-- ===== Drawer (সাইটবার) ===== -->
+    <div id="drawer-overlay" class="fixed inset-0 bg-black/60 z-[90] hidden"></div>
+    <nav id="nav-drawer" class="fixed top-0 left-0 h-full w-72 max-w-[80vw] bg-gradient-to-b from-[#1a1a1a] to-[#0d0d0d] z-[91] flex flex-col transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <div class="drawer-header-logo">
+            <div class="drawer-header-left">
+                <img src="https://i.postimg.cc/mD1VCt2C/RS-Live.png" alt="Rs Live Tv" class="drawer-logo-img">
+                <div class="drawer-brand-info">
+                    <h2 class="drawer-brand-logo">Rs Live Tv</h2>
+                    <span class="drawer-tagline">✦ Unlimited Entertainment</span>
+                </div>
+            </div>
+        </div>
+        <div class="flex-grow p-4 overflow-y-auto">
+            <div class="space-y-2">
+                <a href="#" class="drawer-link" data-popup="games">
+                    <i class="fas fa-gamepad w-6"></i>
+                    <span>Games Zone</span>
+                </a>
+                <a href="#" class="drawer-link" data-popup="support">
+                    <i class="fas fa-headset w-6"></i>
+                    <span>User Support</span>
+                </a>
+            </div>
+            <hr class="drawer-divider my-4">
+            <div>
+                <div class="text-gray-400 text-sm font-semibold mb-3 px-3">SETTINGS</div>
+                <div class="flex items-center justify-between bg-gray-800/50 rounded-lg px-3 py-2.5">
+                    <label for="autoplay-toggle" class="font-medium text-gray-200">Autoplay Next</label>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="autoplay-toggle" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-600 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#e74c3c]"></div>
+                    </label>
+                </div>
+            </div>
+            <hr class="drawer-divider my-4">
+            <div>
+                <div class="text-gray-400 text-sm font-semibold mb-3 px-3">CONNECT WITH US</div>
+                <a href="https://rslive-tv-app-download.vercel.app/" class="drawer-link"><i class="fas fa-globe-americas w-6"></i><span>Visit Website</span></a>
+                <a href="https://t.me/rslivetv" class="drawer-link"><i class="fab fa-telegram-plane w-6"></i><span>Join Telegram</span></a>
+                <a href="#" class="drawer-link"><i class="fas fa-shield-alt w-6"></i><span>Privacy Policy</span></a>
+            </div>
+        </div>
+        <div class="text-center text-xs p-4 border-t drawer-divider">
+            <span class="version-text">Version 4.1 | By <strong>Rs Live Tv</strong></span>
+        </div>
+    </nav>
+
+    <!-- ===== Main App ===== -->
+    <div id="app-shell">
+        <!-- হেডার - শুধু বার + সার্চ -->
+        <header id="main-header" class="fixed top-0 left-0 w-full z-40 transition-all duration-300 px-4 py-3 flex items-center justify-between bg-gradient-to-b from-black/90 to-transparent">
+            <div class="flex items-center gap-3">
+                <button id="drawer-open-btn" aria-label="Open Menu" class="text-xl text-gray-200 hover:text-[#e74c3c] transition-transform hover:scale-110">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <span class="text-white font-bold text-lg hidden sm:block">Rs <span class="text-[#e74c3c]">Live</span></span>
+            </div>
+            <div class="flex items-center gap-5">
+                <button id="search-open-btn" aria-label="Search" class="text-xl text-gray-200 hover:text-[#e74c3c] transition-colors">
+                    <i class="fas fa-search"></i>
+                </button>
+                <a href="account.html" id="user-profile-link" class="w-8 h-8 rounded-full overflow-hidden border border-gray-500 cursor-pointer hover:border-[#e74c3c] transition-colors bg-gray-800">
+                    <img id="header-profile-img" src="https://img.icons8.com/bubbles/100/user.png" alt="Profile" class="w-full h-full object-cover p-0.5">
+                </a>
+            </div>
+        </header>
+
+        <main class="w-full pb--10">
+            <div id="home-page" class="page-content active">
+                <section id="banner-container" class="relative w-full h-[60vw] max-h-[480px] min-h-[250px] bg-[#1a1a1a] mb-6 overflow-hidden">
+                    <div class="shimmer w-full h-full absolute inset-0"></div>
+                    <div class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent z-10 pointer-events-none"></div>
+                </section>
+                <div id="home-sections-container" class="space-y-8 px-4 md:px-6"></div>
+            </div>
+
+            <div id="livetv-page" class="page-content px-4 md:px-6 pt-24 pb-10">
+                <div id="livetv-category-bar" class="flex overflow-x-auto gap-3 pb-3 mb-4 scrollbar-hide -mx-4 px-4"></div>
+                <div id="livetv-grid-container" class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4"></div>
+            </div>
+            <div id="cricket-page" class="page-content space-y-8 px-4 md:px-6 pt-24 pb-10"></div>
+            <div id="movies-page" class="page-content space-y-8 px-4 md:px-6 pt-24 pb-10"></div>
+            
+            <!-- ===== SHORTS পেজ - iframe দিয়ে shorts.html লোড ===== -->
+            <div id="shorts-page" class="page-content">
+                <iframe src="shorts.html" id="shorts-iframe" allow="autoplay; fullscreen" loading="lazy"></iframe>
+            </div>
+        </main>
+
+        <footer class="bg-[#0B0B0B] text-gray-400 pt-10 text-sm mt-auto"></footer>
+    </div>
+
+    <!-- ব্যানার DOM-এ আছে কিন্তু অদৃশ্য -->
+    <div id="ad-container">
+        <img src="https://banglarmritshilpo.top/InShot_20251108_225429253.gif" alt="Banner" style="width: 100%; height: auto; display: block;">
+    </div>
+
+    <!-- ===== নেভিগেশন - HOME বাটন active থাকবে (ডিফল্ট) ===== -->
+    <nav class="bottom-nav">
+        <button data-target="home-page" class="nav-button active">
+            <i class="fas fa-house nav-icon"></i>
+            <span>HOME</span>
+        </button>
+        <button data-target="cricket-page" class="nav-button">
+            <i class="fas fa-trophy nav-icon"></i>
+            <span>EVENTS</span>
+        </button>
+        <button data-target="shorts-page" class="nav-button">
+            <i class="fas fa-bolt nav-icon"></i>
+            <span>SHORTS</span>
+        </button>
+        <button data-target="livetv-page" class="nav-button">
+            <i class="fas fa-tv nav-icon"></i>
+            <span>LIVE TV</span>
+        </button>
+        <button data-target="movies-page" class="nav-button">
+            <i class="fas fa-film nav-icon"></i>
+            <span>MOVIES</span>
+        </button>
+    </nav>
+
+    <div id="grid-page-view">
+        <header class="flex items-center p-4 bg-black/90 backdrop-blur-sm sticky top-0 z-10 border-b border-gray-800"><button id="grid-back-btn" class="text-xl mr-4 hover:text-[#e74c3c]"><i class="fas fa-arrow-left"></i></button><h2 id="grid-page-title" class="text-lg font-bold truncate"></h2></header>
+        <main id="grid-page-content" class="p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></main>
+    </div>
+
+    <div id="search-overlay" class="flex-col p-4">
+        <header class="flex items-center w-full mb-4 gap-3">
+            <button id="search-back-btn" class="text-2xl text-gray-300"><i class="fas fa-arrow-left"></i></button>
+            <input id="search-input" type="text" placeholder="Search" class="w-full bg-[#1a1a1a] text-lg text-white rounded-full py-2.5 pl-5 pr-24 focus:outline-none focus:ring-2 focus:ring-[#e74c3c]">
+            <div class="absolute inset-y-0 right-0 flex items-center pr-4 gap-3">
+                <button id="search-clear-btn" class="text-xl text-gray-400 hidden"><i class="fas fa-times-circle"></i></button>
+                <button id="voice-search-btn" class="text-xl text-gray-300"><i class="fa-solid fa-microphone"></i></button>
+            </div>
+        </header>
+        <main id="search-results-container" class="w-full flex-1 overflow-y-auto pr-2 scrollbar-hide">
+            <div id="top-searches-container">
+                <h3 class="text-lg font-bold text-white mb-4"><i class="fas fa-fire text-[#e74c3c]"></i> Top Searches</h3>
+                <div id="top-searches-pills" class="flex flex-wrap gap-3"></div>
+            </div>
+            <div id="search-results-list" class="hidden"></div>
+            <div id="search-no-results" class="text-center text-gray-500 mt-10 hidden">No results found.</div>
+        </main>
+    </div>
+
+    <div id="player-page-view">
+        <header class="p-4 bg-black/90 backdrop-blur-sm sticky top-0 z-20 flex items-center"><button id="player-back-btn" class="text-xl mr-4 hover:text-[#e74c3c]"><i class="fas fa-arrow-left"></i></button><h2 id="player-page-title-header" class="text-lg font-bold truncate"></h2></header>
+        <section id="player-container" class="w-full bg-black">
+            <div id="player-wrapper"><div class="player-content"><i class="fas fa-spinner fa-spin text-4xl text-gray-500"></i></div></div>
+        </section>
+        <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <section id="action-bar" class="py-4 flex flex-wrap gap-4 items-center justify-between text-gray-400 border-b border-gray-800"><div class="flex items-center space-x-6"><button id="like-btn" class="action-btn flex items-center space-x-2"><i class="far fa-thumbs-up text-xl"></i><span id="like-count">0</span></button><button id="dislike-btn" class="action-btn flex items-center space-x-2"><i class="far fa-thumbs-down text-xl"></i><span id="dislike-count">0</span></button><button id="comment-btn" class="action-btn flex items-center space-x-2"><i class="far fa-comment-alt text-xl"></i><span>Comment</span></button></div><button id="report-btn" class="action-btn flex items-center space-x-2"><i class="far fa-flag text-xl"></i><span>Report</span></button></section>
+            <section id="movie-info" class="py-6"></section>
+            <section id="related-content" class="py-6"><h3 id="related-title" class="text-white text-lg font-semibold mb-3"></h3><div id="related-content-container" class="flex items-start space-x-4 overflow-x-auto scrollbar-hide pb-2"></div></section>
+        </main>
+        <section id="comment-section" class="flex flex-col"><header class="p-4 border-b border-gray-700 flex justify-between items-center"><h3 class="text-lg font-semibold">Comments</h3><button id="close-comments-btn" class="text-2xl hover:text-white text-gray-400">×</button></header><div id="comments-list" class="flex-grow p-4 overflow-y-auto"></div><form id="comment-form" class="p-4 border-t border-gray-700 flex items-center"><input id="comment-input" type="text" class="w-full bg-gray-800 text-white rounded-l-md p-2 focus:outline-none focus:ring-2 focus:ring-[#e74c3c]" placeholder="Add a comment..."><button type="submit" class="bg-[#e74c3c] text-white p-2 rounded-r-md hover:bg-[#c0392b] font-semibold">Send</button></form></section>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest">
+    </script>
+    <script type="module" src="main.js">
+    </script>
+
+    <!-- ===== সিকিউরিটি + গুগল অ্যানালিটিক্স + কাস্টম JS ===== -->
+    <script>
+        (function() {
+            'use strict';
+            
+            // ==========================================
+            // 0. INTRO SPLASH SCREEN - প্রোগ্রেস বার সহ
+            // ==========================================
+            const splash = document.getElementById('intro-splash');
+            const appShell = document.getElementById('app-shell');
+            const progressBar = document.getElementById('splashProgressBar');
+
+            let progress = 0;
+            const interval = setInterval(function() {
+                progress += Math.random() * 8 + 2;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = progress + '%';
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(function() {
+                        splash.classList.add('hide');
+                        appShell.classList.add('visible');
+                        setTimeout(function() {
+                            splash.style.display = 'none';
+                        }, 800);
+                    }, 500);
+                }
+            }, 200);
+
+            // নিরাপত্তা: ৬ সেকেন্ড পর জোর করে হাইড
+            setTimeout(function() {
+                if (progress < 100) {
+                    clearInterval(interval);
+                    progressBar.style.width = '100%';
+                    setTimeout(function() {
+                        splash.classList.add('hide');
+                        appShell.classList.add('visible');
+                        setTimeout(function() {
+                            splash.style.display = 'none';
+                        }, 800);
+                    }, 600);
+                }
+            }, 6000);
+
+            // ==========================================
+            // 1. DRAWER TOGGLE
+            // ==========================================
+            const drawerOpenBtn = document.getElementById('drawer-open-btn');
+            const drawerOverlay = document.getElementById('drawer-overlay');
+            const navDrawer = document.getElementById('nav-drawer');
+
+            function openDrawer() {
+                navDrawer.classList.remove('-translate-x-full');
+                drawerOverlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeDrawer() {
+                navDrawer.classList.add('-translate-x-full');
+                drawerOverlay.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+            
+            if (drawerOpenBtn && drawerOverlay && navDrawer) {
+                drawerOpenBtn.addEventListener('click', openDrawer);
+                drawerOverlay.addEventListener('click', closeDrawer);
+            }
+
+            // ==========================================
+            // 2. POPUP SYSTEM
+            // ==========================================
+            const popup = document.getElementById('custom-popup');
+            const popupIcon = document.getElementById('popup-icon');
+            const popupTitle = document.getElementById('popup-title');
+            const popupDesc = document.getElementById('popup-desc');
+            const popupClose = document.getElementById('popup-close-btn');
+
+            const popupData = {
+                games: {
+                    icon: '<i class="fas fa-gamepad"></i>',
+                    title: '🎮 Games Zone',
+                    desc: 'Exciting games are coming soon! Stay tuned for cricket, puzzle, and more fun games.'
+                },
+                support: {
+                    icon: '<i class="fas fa-headset"></i>',
+                    title: '📞 User Support',
+                    desc: 'Facing any issue? Contact our support team 24/7. We\'re here to help you!'
+                }
+            };
+
+            document.querySelectorAll('.drawer-link[data-popup]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const type = this.dataset.popup;
+                    if (type && popupData[type]) {
+                        const data = popupData[type];
+                        popupIcon.innerHTML = data.icon;
+                        popupTitle.textContent = data.title;
+                        popupDesc.textContent = data.desc;
+                        popup.classList.add('active');
+                        closeDrawer();
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+
+            if (popupClose) {
+                popupClose.addEventListener('click', function() {
+                    popup.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            }
+            popup.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    popup.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+
+            // ==========================================
+            // 3. NAVIGATION - পেজ চেঞ্জ হলে shorts বন্ধ
+            // ==========================================
+            const shortsIframe = document.getElementById('shorts-iframe');
+
+            function stopShortsVideo() {
+                if (shortsIframe && shortsIframe.contentWindow) {
+                    try {
+                        shortsIframe.contentWindow.postMessage({ action: 'pauseVideo' }, '*');
+                    } catch(e) {}
+                }
+            }
+
+            document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+            const homePage = document.getElementById('home-page');
+            if (homePage) homePage.style.display = 'block';
+
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const currentActive = document.querySelector('.page-content[style*="display: block"]');
+                    if (currentActive && currentActive.id === 'shorts-page') {
+                        stopShortsVideo();
+                    }
+
+                    document.querySelectorAll('.nav-button').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const target = this.dataset.target;
+                    document.querySelectorAll('.page-content').forEach(p => p.style.display = 'none');
+                    const targetPage = document.getElementById(target);
+                    if (targetPage) {
+                        targetPage.style.display = 'block';
+                        if (target === 'shorts-page') {
+                            if (shortsIframe) {
+                                shortsIframe.src = shortsIframe.src;
+                            }
+                        }
+                    }
+                });
+            });
+
+            // ==========================================
+            // 4. ফুলস্ক্রিন – শুধু প্রথম ক্লিকেই কাজ করবে
+            // ==========================================
+            let fullscreenActivated = false; // ফ্ল্যাগ: একবার কাজ করলেই বন্ধ
+
+            function activateFullscreenOnce() {
+                // যদি আগেই একবার ফুলস্ক্রিন হয়ে যায়, তাহলে আর কিছু করবে না
+                if (fullscreenActivated) return;
+
+                // যদি বর্তমানে ফুলস্ক্রিন না থাকে, তাহলে ফুলস্ক্রিনে যান
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen();
+                    } else if (document.documentElement.webkitRequestFullscreen) {
+                        document.documentElement.webkitRequestFullscreen();
+                    } else if (document.documentElement.mozRequestFullScreen) {
+                        document.documentElement.mozRequestFullScreen();
+                    } else if (document.documentElement.msRequestFullscreen) {
+                        document.documentElement.msRequestFullscreen();
+                    }
+                    // ফ্ল্যাগ true করে দিন, যাতে পরবর্তী ক্লিক আর কাজ না করে
+                    fullscreenActivated = true;
+                } else {
+                    // যদি ইতিমধ্যেই ফুলস্ক্রিন থাকে (পেজ লোডের পর থেকেই), তাহলেও ফ্ল্যাগ true করে দিন
+                    fullscreenActivated = true;
+                }
+            }
+
+            // ডকুমেন্টের যেকোনো জায়গায় ক্লিক করলে উপরের ফাংশন কল হবে (কিন্তু শুধু ১ বার)
+            document.addEventListener('click', activateFullscreenOnce);
+
+            // (ঐচ্ছিক) Esc প্রেস করলে ফ্ল্যাগ রিসেট করতে চাইলে নিচের কোড আনকমেন্ট করুন
+            // তাহলে Esc-এর পর আবার ক্লিক করলে ফুলস্ক্রিন হবে (দ্বিতীয়বারের জন্য)
+            /*
+            document.addEventListener('fullscreenchange', function() {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    fullscreenActivated = false;
+                }
+            });
+            document.addEventListener('webkitfullscreenchange', function() {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    fullscreenActivated = false;
+                }
+            });
+            */
+
+            // ==========================================
+            // 5. SECURITY
+            // ==========================================
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && (e.key === 'u' || e.key === 'U' || e.key === 's' || e.key === 'S')) {
+                    e.preventDefault();
+                    return false;
+                }
+                if (e.ctrlKey && e.shiftKey && (e.key === 'i' || e.key === 'I' || e.key === 'j' || e.key === 'J' || e.key === 'c' || e.key === 'C')) {
+                    e.preventDefault();
+                    return false;
+                }
+                if (e.key === 'F12') {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            document.addEventListener('dragstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('copy', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            document.addEventListener('selectstart', function(e) {
+                e.preventDefault();
+                return false;
+            });
+
+            // ==========================================
+            // 6. GOOGLE ANALYTICS
+            // ==========================================
+            window.trackEvent = function(eventName, eventParams) {
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', eventName, eventParams);
+                }
+            };
+
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const page = this.dataset.target;
+                    trackEvent('page_view', {
+                        page_title: page,
+                        page_location: window.location.href
+                    });
+                });
+            });
+
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('.content-link');
+                if (link) {
+                    trackEvent('content_click', {
+                        content_id: link.dataset.id || 'unknown',
+                        content_type: 'video'
+                    });
+                }
+            });
+
+            // ==========================================
+            // 7. অ্যাপ মোড চেক
+            // ==========================================
+            const isInAppMode = window.navigator.standalone || 
+                                window.matchMedia('(display-mode: standalone)').matches ||
+                                window.matchMedia('(display-mode: fullscreen)').matches;
+
+            if (isInAppMode) {
+                document.body.classList.add('app-mode');
+                console.log('📱 Rs Live Tv is running in App Mode - Status Bar Hidden');
+            }
+
+            console.log('🔒 Rs Live Tv - All Security Measures Enabled');
+            console.log('📊 Google Analytics Tracking Active');
+            console.log('✅ Rs Live Tv - Application Loaded Successfully (v4.1)');
+            console.log('🏠 HOME পেজ ডিফল্টভাবে সিলেক্ট করা হয়েছে!');
+            console.log('📹 SHORTS পেজ থেকে অন্য পেজে গেলে ভিডিও অটো বন্ধ হবে!');
+            console.log('⛶ ফুলস্ক্রিন বাটন সরিয়ে শুধু প্রথম ক্লিকে ফুলস্ক্রিন করা হয়েছে!');
+
+        })();
+    </script>
+    <script>
+  atOptions = {
+    'key' : '774c0e371455f6476668178b5faae5ab',
+    'format' : 'iframe',
+    'height' : 50,
+    'width' : 320,
+    'params' : {}
+  };
+</script>
+<script src="https://www.highperformanceformat.com/774c0e371455f6476668178b5faae5ab/invoke.js"></script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Profile - tioTV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background-color: #202124; /* Google Dark Background */
+            color: #e8eaed; 
+        }
+        
+        /* Material Input Styles */
+        .material-input-group {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .material-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid #5f6368;
+            border-radius: 4px;
+            padding: 16px 14px;
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .material-input:focus {
+            border-color: #8ab4f8; /* Google Blue */
+            border-width: 2px;
+            padding: 15px 13px; /* Adjust for border width */
+        }
+        .material-label {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #202124;
+            padding: 0 4px;
+            color: #9aa0a6;
+            font-size: 16px;
+            transition: all 0.2s;
+            pointer-events: none;
+        }
+        .material-input:focus ~ .material-label,
+        .material-input:not(:placeholder-shown) ~ .material-label {
+            top: 0;
+            font-size: 12px;
+            color: #8ab4f8;
+        }
+
+        /* Avatar Upload */
+        .avatar-wrapper {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto;
+        }
+        .avatar-edit-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: #8ab4f8;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #202124;
+            cursor: pointer;
+        }
+        
+        /* Buttons */
+        .btn-google {
+            background-color: #8ab4f8;
+            color: #202124;
+            font-weight: 500;
+            padding: 10px 24px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .btn-google:hover { background-color: #a6c8ff; }
+        
+        .btn-text {
+            color: #8ab4f8;
+            font-weight: 500;
+            padding: 10px 24px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .btn-text:hover { background-color: rgba(138, 180, 248, 0.1); }
+
+        /* Loader */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid #8ab4f8;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .hidden-section { display: none; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen px-4">
+
+    <!-- Header (Simple & Clean) -->
+    <header class="fixed top-0 left-0 w-full p-4 flex items-center bg-[#202124] z-20 border-b border-[#303134]">
+        <button onclick="window.location.href='index.html'" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#303134] text-white">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        <h1 class="ml-4 text-xl font-normal text-white">Your Profile</h1>
+    </header>
+
+    <!-- Main Card -->
+    <main class="w-full max-w-md mt-20 mb-10">
+        
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard" class="flex flex-col items-center text-center">
+            
+            <!-- Profile Image -->
+            <div class="mb-6 relative">
+                <img id="dashboard-img" src="" class="w-28 h-28 rounded-full object-cover border border-[#5f6368]" alt="Profile">
+            </div>
+
+            <h2 id="dashboard-name" class="text-3xl font-normal mb-1">User Name</h2>
+            <p class="text-[#9aa0a6] text-sm mb-8">tioTV Member • Free Plan</p>
+
+            <!-- Info Rows (Like Google Settings) -->
+            <div class="w-full bg-[#303134] rounded-lg overflow-hidden border border-[#5f6368] mb-8 text-left">
+                
+                <div class="p-4 border-b border-[#5f6368] flex justify-between items-center hover:bg-[#3c4043] transition-colors cursor-pointer" onclick="toggleEditMode()">
+                    <div>
+                        <p class="text-xs text-[#9aa0a6] font-medium uppercase tracking-wider mb-1">Display Name</p>
+                        <p id="info-name" class="text-lg">Loading...</p>
+                    </div>
+                    <i class="fas fa-pen text-[#8ab4f8]"></i>
+                </div>
+
+                <div class="p-4 flex justify-between items-center hover:bg-[#3c4043] transition-colors">
+                    <div>
+                        <p class="text-xs text-[#9aa0a6] font-medium uppercase tracking-wider mb-1">Account ID</p>
+                        <p class="text-sm font-mono text-[#9aa0a6]">#8834920</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-4">
+                <button onclick="logout()" class="btn-text text-red-400 hover:bg-red-500/10">
+                    Sign out
+                </button>
+            </div>
+        </div>
+
+
+        <!-- EDIT FORM (Hidden by default) -->
+        <div id="view-edit" class="hidden-section w-full">
+            <h2 class="text-2xl font-normal mb-2 text-center">Edit Profile</h2>
+            <p class="text-[#9aa0a6] text-center mb-8 text-sm">Update your personal information</p>
+
+            <!-- Image Uploader -->
+            <div class="avatar-wrapper mb-8">
+                <label for="file-upload" class="cursor-pointer">
+                    <img id="preview-image" src="" class="w-full h-full rounded-full object-cover opacity-80 hover:opacity-100 transition-opacity">
+                    <div class="avatar-edit-overlay">
+                        <i class="fas fa-camera text-[#202124] text-sm"></i>
+                    </div>
+                    <!-- Spinner -->
+                    <div id="img-loading" class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center hidden">
+                        <div class="loader"></div>
+                    </div>
+                </label>
+                <input type="file" id="file-upload" accept="image/*" class="hidden" onchange="uploadToImgBB()">
+            </div>
+
+            <!-- Material Input Form -->
+            <div class="w-full px-2">
+                <div class="material-input-group">
+                    <input type="text" id="username-input" class="material-input" placeholder=" " autocomplete="off">
+                    <label class="material-label">Full Name</label>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end gap-2 mt-6">
+                <button onclick="cancelEdit()" id="cancel-btn" class="btn-text">Cancel</button>
+                <button onclick="saveProfile()" class="btn-google shadow-md">Save</button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const IMGBB_API_KEY = "4f29b88d8207f6e762c2c852d5c895f8"; 
+        let uploadedImageUrl = "";
+
+        // ---- Initialization ----
+        window.onload = function() {
+            const user = JSON.parse(localStorage.getItem('tioUser'));
+            
+            if(user && user.name) {
+                showDashboard(user);
+            } else {
+                showEditMode(false); // First time user
+            }
+        }
+
+        // ---- View Controllers ----
+        function showDashboard(user) {
+            document.getElementById('view-edit').style.display = 'none';
+            document.getElementById('view-dashboard').style.display = 'flex';
+            
+            // Update Dashboard UI
+            document.getElementById('dashboard-name').textContent = user.name;
+            document.getElementById('info-name').textContent = user.name;
+            
+            const defaultImg = "https://lh3.googleusercontent.com/a/default-user=s120-p";
+            const imgUrl = user.image || defaultImg;
+            
+            document.getElementById('dashboard-img').src = imgUrl;
+        }
+
+        function showEditMode(canCancel) {
+            document.getElementById('view-dashboard').style.display = 'none';
+            document.getElementById('view-edit').style.display = 'block';
+            
+            const user = JSON.parse(localStorage.getItem('tioUser'));
+            
+            // Pre-fill data
+            if(user) {
+                document.getElementById('username-input').value = user.name || "";
+                
+                const defaultImg = "https://lh3.googleusercontent.com/a/default-user=s120-p";
+                uploadedImageUrl = user.image || defaultImg;
+                document.getElementById('preview-image').src = uploadedImageUrl;
+            } else {
+                 document.getElementById('preview-image').src = "https://lh3.googleusercontent.com/a/default-user=s120-p";
+            }
+
+            // Toggle Cancel Button
+            const cancelBtn = document.getElementById('cancel-btn');
+            if(canCancel) {
+                cancelBtn.style.display = 'inline-block';
+            } else {
+                cancelBtn.style.display = 'none';
+            }
+        }
+
+        function toggleEditMode() {
+            showEditMode(true);
+        }
+
+        function cancelEdit() {
+            const user = JSON.parse(localStorage.getItem('tioUser'));
+            if(user) showDashboard(user);
+        }
+
+        // ---- Functionality ----
+        async function uploadToImgBB() {
+            const fileInput = document.getElementById('file-upload');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            document.getElementById('img-loading').classList.remove('hidden');
+
+            const formData = new FormData();
+            formData.append("image", file);
+
+            try {
+                const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const data = await response.json();
+
+                if (data.success) {
+                    uploadedImageUrl = data.data.url;
+                    document.getElementById('preview-image').src = uploadedImageUrl;
+                } else {
+                    alert("Image upload failed.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Network error.");
+            } finally {
+                document.getElementById('img-loading').classList.add('hidden');
+            }
+        }
+
+        function saveProfile() {
+            const name = document.getElementById('username-input').value.trim();
+            
+            if(!name) { 
+                // Add shake animation or red border here if wanted
+                alert("Please enter a name"); 
+                return; 
+            }
+
+            const defaultImg = "https://lh3.googleusercontent.com/a/default-user=s120-p";
+            
+            const userData = { 
+                name: name, 
+                image: uploadedImageUrl || defaultImg 
+            };
+
+            localStorage.setItem('tioUser', JSON.stringify(userData));
+            showDashboard(userData);
+        }
+
+        function logout() {
+            if(confirm("Remove account from this device?")) {
+                localStorage.removeItem('tioUser');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>

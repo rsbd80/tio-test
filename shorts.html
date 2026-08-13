@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>RS Short Video</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #000; overflow: hidden; height: 100vh; width: 100vw; display: flex; flex-direction: column; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; position: fixed; top: 0; left: 0; }
+        #player-container { width: 100vw; height: 100vh; background: #000; position: relative; display: flex; justify-content: center; align-items: center; overflow: hidden; touch-action: none; flex-shrink: 0; }
+        #video-wrapper { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; overflow: hidden; transform-origin: center center; will-change: transform; touch-action: none; }
+        video { width: 100%; height: 100%; object-fit: contain; background: #000; display: block; }
+        video::-webkit-media-controls { display: none !important; }
+        video::-webkit-media-controls-enclosure { display: none !important; }
+        video::-webkit-media-controls-panel { display: none !important; }
+        video::-webkit-media-controls-play-button { display: none !important; }
+        video::-webkit-media-controls-start-playback-button { display: none !important; }
+        video::-webkit-media-controls-timeline { display: none !important; }
+        video::-webkit-media-controls-current-time-display { display: none !important; }
+        video::-webkit-media-controls-time-remaining-display { display: none !important; }
+        video::-webkit-media-controls-mute-button { display: none !important; }
+        video::-webkit-media-controls-volume-slider { display: none !important; }
+        video::-webkit-media-controls-fullscreen-button { display: none !important; }
+        video::-moz-media-controls { display: none !important; }
+        video::-moz-media-controls-panel { display: none !important; }
+        video[controlslist] { controlslist: "nodownload nofullscreen noremoteplayback"; }
+        video[disablepictureinpicture] { disablepictureinpicture: true; }
+        .loader { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 40px; height: 40px; border: 3px solid #222; border-top: 3px solid #e74c3c; border-radius: 50%; animation: spin 0.8s linear infinite; display: none; z-index: 20; pointer-events: none; }
+        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+        .error-msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #fff; font-size: 16px; text-align: center; z-index: 25; padding: 20px; background: rgba(0,0,0,0.85); border-radius: 12px; display: none; max-width: 80%; font-family: system-ui, sans-serif; }
+        .play-pause-btn { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.7); width: 72px; height: 72px; border-radius: 50%; background: rgba(255,255,255,0.10); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.12); display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.3s ease; opacity: 0; pointer-events: none; color: #fff; font-size: 30px; box-shadow: 0 8px 40px rgba(0,0,0,0.6); }
+        .play-pause-btn.show { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+        .play-pause-btn.hide-anim { opacity: 0; transform: translate(-50%, -50%) scale(0.7); pointer-events: none; }
+        .play-pause-btn:active { transform: translate(-50%, -50%) scale(0.88); }
+        .play-pause-btn i { transition: transform 0.3s ease; }
+        .play-pause-btn:active i { transform: scale(0.85); }
+        .video-info { position: fixed; bottom: 80px; left: 20px; z-index: 12; color: #fff; font-family: system-ui, sans-serif; max-width: 70%; pointer-events: none; }
+        .video-info .title { font-size: 18px; font-weight: 600; margin-bottom: 4px; text-shadow: 0 2px 20px rgba(0,0,0,0.9); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .video-info .meta { display: flex; align-items: center; gap: 16px; font-size: 13px; color: rgba(255,255,255,0.6); text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        .video-info .meta span { display: flex; align-items: center; gap: 5px; }
+        .video-info .meta i { font-size: 12px; }
+        .download-btn { position: fixed; bottom: 80px; right: 20px; z-index: 12; width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.08); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.10); display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.7); font-size: 20px; cursor: pointer; transition: all 0.3s ease; text-decoration: none; box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        .download-btn:active { transform: scale(0.85); background: rgba(231,76,60,0.2); }
+        .download-btn:hover { background: rgba(255,255,255,0.15); }
+        .rs-watermark { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.08); font-size: 16px; font-family: system-ui, sans-serif; letter-spacing: 3px; z-index: 5; pointer-events: none; text-shadow: 0 2px 20px rgba(0,0,0,0.9); font-weight: 300; }
+        .rs-watermark span { color: rgba(231, 76, 60, 0.15); font-weight: 700; }
+        .toast { position: fixed; bottom: 150px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); backdrop-filter: blur(12px); color: #fff; padding: 12px 24px; border-radius: 24px; font-size: 14px; font-family: system-ui, sans-serif; z-index: 100; border: 1px solid rgba(255,255,255,0.08); animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); display: none; align-items: center; gap: 10px; }
+        .toast.show { display: flex; }
+        .toast i { font-size: 18px; }
+        @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(30px) scale(0.9); } to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+        #loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 5; transition: opacity 0.5s ease; }
+        #loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        .loading-spinner { width: 50px; height: 50px; border: 3px solid #333; border-top: 3px solid #e74c3c; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .loading-text { color: rgba(255,255,255,0.3); font-family: system-ui, sans-serif; font-size: 14px; margin-top: 16px; letter-spacing: 2px; animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.8; } }
+        @media (max-width: 480px) { .play-pause-btn { width: 56px; height: 56px; font-size: 22px; } .rs-watermark { font-size: 13px; bottom: 20px; letter-spacing: 2px; } .video-info { bottom: 70px; left: 14px; max-width: 75%; } .video-info .title { font-size: 15px; } .video-info .meta { font-size: 11px; gap: 12px; } .download-btn { width: 42px; height: 42px; font-size: 17px; bottom: 70px; right: 14px; } .toast { font-size: 12px; padding: 10px 18px; bottom: 130px; } }
+    </style>
+</head>
+<body>
+    <div class="loader" id="loader"></div>
+    <div class="error-msg" id="errorMsg"></div>
+    <div id="player-container">
+        <div id="video-wrapper">
+            <video id="myVideo" playsinline></video>
+        </div>
+        <div id="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading Video...</div>
+        </div>
+        <div class="play-pause-btn" id="playPauseBtn">
+            <i class="fas fa-play" id="playIcon"></i>
+        </div>
+    </div>
+
+    <div class="video-info" id="videoInfo">
+        <div class="title" id="videoTitle">🎬 Short Video</div>
+        <div class="meta">
+            <span><i class="fas fa-eye"></i> <span id="viewCount">0</span></span>
+            <span><i class="fas fa-clock"></i> <span id="uploadTime">Just now</span></span>
+        </div>
+    </div>
+
+    <a class="download-btn" id="downloadBtn" download>
+        <i class="fas fa-download"></i>
+    </a>
+
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle" style="color: #2ecc71;"></i>
+        <span id="toastMsg">Download started!</span>
+    </div>
+
+    <div class="rs-watermark">✦ <span>RS</span> Live ✦</div>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        (function() {
+            'use strict';
+
+            // ✅ শুধু এখানে আপনার সোর্স সেট করুন (ghosttv620-এর কোনো চিহ্ন নেই)
+            const OWNER = "jannatulbusra000";
+            const REPO = "My-reels";
+            const TAG = "v1.0";
+
+            // ===== DOM =====
+            const container = document.getElementById('player-container');
+            const video = document.getElementById('myVideo');
+            const wrapper = document.getElementById('video-wrapper');
+            const loader = document.getElementById('loader');
+            const errorMsg = document.getElementById('errorMsg');
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const playIcon = document.getElementById('playIcon');
+            const videoTitle = document.getElementById('videoTitle');
+            const viewCount = document.getElementById('viewCount');
+            const uploadTime = document.getElementById('uploadTime');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+
+            let videoUrls = [];
+            let videoNames = [];
+            let currentIndex = 0;
+            let isPlaying = true;
+            let btnTimeout = null;
+            let viewCounter = 0;
+            let toastTimeout = null;
+            let isLoading = false;
+
+            let lockedIndices = new Set();
+            let touchStartY = 0;
+            let touchStartX = 0;
+            let isSwiping = false;
+            const SWIPE_THRESHOLD = 50;
+
+            let currentScale = 1;
+            let currentTranslateX = 0;
+            let currentTranslateY = 0;
+            const MIN_SCALE = 1;
+            const MAX_SCALE = 3;
+            let initialPinchDistance = 0;
+            let initialScale = 1;
+            let initialTranslateX = 0;
+            let initialTranslateY = 0;
+            let isPinching = false;
+            let lastTapTime = 0;
+            let pinchCenterX = 0;
+            let pinchCenterY = 0;
+            let isPanning = false;
+            let startPanX = 0;
+            let startPanY = 0;
+            let startTranslateX = 0;
+            let startTranslateY = 0;
+
+            function showToast(msg, icon = 'fa-check-circle', color = '#2ecc71') {
+                clearTimeout(toastTimeout);
+                toastMsg.textContent = msg;
+                toast.querySelector('i').className = `fas ${icon}`;
+                toast.querySelector('i').style.color = color;
+                toast.classList.add('show');
+                toastTimeout = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2500);
+            }
+
+            document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+
+            function clampTranslation(scale, tx, ty) {
+                const rect = container.getBoundingClientRect();
+                const maxX = (rect.width * (scale - 1)) / 2;
+                const maxY = (rect.height * (scale - 1)) / 2;
+                return { x: Math.min(Math.max(tx, -maxX), maxX), y: Math.min(Math.max(ty, -maxY), maxY) };
+            }
+
+            function setTransform(scale, tx, ty) {
+                const clamped = clampTranslation(scale, tx, ty);
+                currentScale = Math.min(Math.max(scale, MIN_SCALE), MAX_SCALE);
+                currentTranslateX = clamped.x;
+                currentTranslateY = clamped.y;
+                wrapper.style.transform = `translate(${currentTranslateX}px, ${currentTranslateY}px) scale(${currentScale})`;
+            }
+
+            function resetZoom() { setTransform(1, 0, 0); }
+
+            function handleDoubleTap(e) {
+                const now = Date.now();
+                const timeSinceLastTap = now - lastTapTime;
+                if (timeSinceLastTap < 300) { resetZoom(); lastTapTime = 0; return true; }
+                lastTapTime = now;
+                return false;
+            }
+
+            function getPinchDistance(touches) {
+                if (touches.length < 2) return 0;
+                const dx = touches[0].clientX - touches[1].clientX;
+                const dy = touches[0].clientY - touches[1].clientY;
+                return Math.sqrt(dx * dx + dy * dy);
+            }
+
+            function getPinchCenter(touches) {
+                if (touches.length < 2) return { x: 0, y: 0 };
+                const rect = container.getBoundingClientRect();
+                const cx = (touches[0].clientX + touches[1].clientX) / 2 - rect.left;
+                const cy = (touches[0].clientY + touches[1].clientY) / 2 - rect.top;
+                return { x: cx, y: cy };
+            }
+
+            function togglePlayPause() {
+                if (video.paused) {
+                    video.play().catch(() => {});
+                    isPlaying = true;
+                    playIcon.className = 'fas fa-pause';
+                } else {
+                    video.pause();
+                    isPlaying = false;
+                    playIcon.className = 'fas fa-play';
+                }
+                showPlayButton(true);
+            }
+
+            function showPlayButton(show) {
+                clearTimeout(btnTimeout);
+                if (show) {
+                    playPauseBtn.classList.remove('hide-anim');
+                    playPauseBtn.classList.add('show');
+                    btnTimeout = setTimeout(() => {
+                        playPauseBtn.classList.remove('show');
+                        playPauseBtn.classList.add('hide-anim');
+                    }, 2000);
+                } else {
+                    playPauseBtn.classList.remove('show');
+                    playPauseBtn.classList.add('hide-anim');
+                }
+            }
+
+            function updateVideoInfo(title, views, time) {
+                videoTitle.textContent = title || '🎬 Short Video';
+                viewCount.textContent = views || '0';
+                uploadTime.textContent = time || 'Just now';
+            }
+
+            function handleSwipe(deltaY) {
+                if (Math.abs(deltaY) < SWIPE_THRESHOLD) return;
+                if (videoUrls.length === 0) return;
+                if (isLoading) return;
+                loadRandomVideo();
+            }
+
+            container.addEventListener('touchstart', function(e) {
+                const touches = e.touches;
+                if (touches.length === 1) {
+                    touchStartY = touches[0].clientY;
+                    touchStartX = touches[0].clientX;
+                    isSwiping = true;
+                }
+                if (touches.length === 2) {
+                    isPinching = true;
+                    isPanning = false;
+                    isSwiping = false;
+                    initialPinchDistance = getPinchDistance(touches);
+                    initialScale = currentScale;
+                    initialTranslateX = currentTranslateX;
+                    initialTranslateY = currentTranslateY;
+                    const center = getPinchCenter(touches);
+                    pinchCenterX = center.x;
+                    pinchCenterY = center.y;
+                    e.preventDefault();
+                } else if (touches.length === 1 && currentScale > 1) {
+                    isPanning = true;
+                    isPinching = false;
+                    isSwiping = false;
+                    startPanX = touches[0].clientX;
+                    startPanY = touches[0].clientY;
+                    startTranslateX = currentTranslateX;
+                    startTranslateY = currentTranslateY;
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            container.addEventListener('touchmove', function(e) {
+                const touches = e.touches;
+                if (touches.length === 2 && isPinching) {
+                    const distance = getPinchDistance(touches);
+                    if (initialPinchDistance > 0) {
+                        const scaleFactor = distance / initialPinchDistance;
+                        let newScale = initialScale * scaleFactor;
+                        newScale = Math.min(Math.max(newScale, MIN_SCALE), MAX_SCALE);
+                        const rect = container.getBoundingClientRect();
+                        const centerX = rect.width / 2;
+                        const centerY = rect.height / 2;
+                        const dx = pinchCenterX - centerX;
+                        const dy = pinchCenterY - centerY;
+                        let newTx = initialTranslateX + dx * (1 - newScale / initialScale);
+                        let newTy = initialTranslateY + dy * (1 - newScale / initialScale);
+                        setTransform(newScale, newTx, newTy);
+                        e.preventDefault();
+                    }
+                } else if (touches.length === 1 && isPanning) {
+                    const dx = touches[0].clientX - startPanX;
+                    const dy = touches[0].clientY - startPanY;
+                    let newTx = startTranslateX + dx;
+                    let newTy = startTranslateY + dy;
+                    setTransform(currentScale, newTx, newTy);
+                    e.preventDefault();
+                } else if (touches.length === 1 && isSwiping) {
+                    const deltaY = touches[0].clientY - touchStartY;
+                    const deltaX = touches[0].clientX - touchStartX;
+                    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > 20) {
+                        e.preventDefault();
+                    }
+                }
+            }, { passive: false });
+
+            container.addEventListener('touchend', function(e) {
+                if (e.changedTouches.length === 1 && !isPinching && !isPanning) {
+                    const touch = e.changedTouches[0];
+                    if (handleDoubleTap(touch)) {
+                        e.preventDefault();
+                        isSwiping = false;
+                        return;
+                    }
+                    if (!isSwiping || Math.abs(e.changedTouches[0].clientY - touchStartY) < 15) {
+                        togglePlayPause();
+                    }
+                }
+                if (isSwiping && e.changedTouches.length === 1) {
+                    const touch = e.changedTouches[0];
+                    const deltaY = touch.clientY - touchStartY;
+                    const deltaX = touch.clientX - touchStartX;
+                    if (Math.abs(deltaY) > Math.abs(deltaX) && Math.abs(deltaY) > SWIPE_THRESHOLD) {
+                        handleSwipe(deltaY);
+                    }
+                    isSwiping = false;
+                }
+                if (isPinching) {
+                    isPinching = false;
+                    initialPinchDistance = 0;
+                    e.preventDefault();
+                }
+                if (isPanning) {
+                    isPanning = false;
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            let wheelTimeout = null;
+            container.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                if (Math.abs(e.deltaY) > 30 && !isLoading) {
+                    clearTimeout(wheelTimeout);
+                    wheelTimeout = setTimeout(() => {
+                        loadRandomVideo();
+                    }, 150);
+                }
+            }, { passive: false });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (!isLoading) loadRandomVideo();
+                }
+                if (e.key === ' ' || e.key === 'Spacebar') {
+                    e.preventDefault();
+                    togglePlayPause();
+                }
+            });
+
+            playPauseBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                togglePlayPause();
+            });
+
+            container.addEventListener('click', function(e) {
+                if (e.target === video || e.target === wrapper) {
+                    togglePlayPause();
+                }
+            });
+
+            downloadBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const currentUrl = videoUrls[currentIndex];
+                if (currentUrl) {
+                    const link = document.createElement('a');
+                    link.href = currentUrl;
+                    link.download = videoNames[currentIndex] || `short_video_${currentIndex+1}.mp4`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    showToast('⬇️ Download started!', 'fa-download', '#3498db');
+                } else {
+                    showToast('❌ No video to download', 'fa-exclamation-circle', '#e74c3c');
+                }
+            });
+
+            window.addEventListener('message', function(e) {
+                if (e.data && e.data.action === 'pauseVideo') {
+                    if (!video.paused) {
+                        video.pause();
+                        isPlaying = false;
+                        playIcon.className = 'fas fa-play';
+                        showPlayButton(true);
+                    }
+                }
+            });
+
+            video.addEventListener('play', function() {
+                isPlaying = true;
+                playIcon.className = 'fas fa-pause';
+                playPauseBtn.classList.remove('show');
+                playPauseBtn.classList.add('hide-anim');
+                clearTimeout(btnTimeout);
+                if (viewCounter === 0) {
+                    viewCounter = Math.floor(Math.random() * 500) + 50;
+                    viewCount.textContent = viewCounter;
+                }
+            });
+
+            video.addEventListener('pause', function() {
+                isPlaying = false;
+                playIcon.className = 'fas fa-play';
+                if (!video.ended) {
+                    showPlayButton(true);
+                }
+            });
+
+            video.addEventListener('ended', function() {
+                isPlaying = false;
+                playIcon.className = 'fas fa-play';
+                showPlayButton(true);
+                setTimeout(() => {
+                    if (!isLoading) loadRandomVideo();
+                }, 800);
+            });
+
+            function generateRandomViews() {
+                return Math.floor(Math.random() * 5000) + 100;
+            }
+
+            function generateRandomTime() {
+                const times = ['Just now', '5 min ago', '15 min ago', '1 hour ago', '2 hours ago', '5 hours ago', '1 day ago', '2 days ago', '1 week ago'];
+                return times[Math.floor(Math.random() * times.length)];
+            }
+
+            // ============================================
+            // 🔥 ভিডিও লোড করুন (শুধু আপনার সোর্স)
+            // ============================================
+            async function fetchVideoUrls() {
+                try {
+                    loadingOverlay.classList.remove('hidden');
+                    errorMsg.style.display = 'none';
+
+                    const headers = { Accept: "application/vnd.github+json" };
+                    const res = await fetch(
+                        `https://api.github.com/repos/${OWNER}/${REPO}/releases/tags/${TAG}`,
+                        { headers }
+                    );
+
+                    if (!res.ok) {
+                        if (res.status === 404) throw new Error(`রিলিজ পাওয়া যায়নি! (${OWNER}/${REPO}/tags/${TAG})`);
+                        throw new Error(`HTTP ${res.status}`);
+                    }
+
+                    const data = await res.json();
+                    if (!data.assets || data.assets.length === 0) {
+                        throw new Error('কোনো ভিডিও পাওয়া যায়নি!');
+                    }
+
+                    videoUrls = [];
+                    videoNames = [];
+                    data.assets.forEach(asset => {
+                        if (/\.(mp4|webm|ogg|mov|m4v)$/i.test(asset.name)) {
+                            videoUrls.push(asset.browser_download_url);
+                            const name = asset.name.replace(/\.[^.]+$/, '').replace(/[_-]/g, ' ');
+                            videoNames.push(name.charAt(0).toUpperCase() + name.slice(1) || `Short Video ${videoUrls.length+1}`);
+                        }
+                    });
+
+                    if (videoUrls.length === 0) {
+                        throw new Error('কোনো ভিডিও ফাইল পাওয়া যায়নি!');
+                    }
+
+                    loadingOverlay.classList.add('hidden');
+                    lockedIndices = new Set();
+                    currentIndex = Math.floor(Math.random() * videoUrls.length);
+                    lockedIndices.add(currentIndex);
+                    
+                    console.log(`✅ মোট ${videoUrls.length}টি ভিডিও পাওয়া গেছে`);
+                    console.log(`📂 সোর্স: ${OWNER}/${REPO}/releases/tag/${TAG}`);
+                    playVideo(currentIndex);
+
+                } catch (error) {
+                    loadingOverlay.classList.add('hidden');
+                    errorMsg.textContent = `❌ ${error.message}`;
+                    errorMsg.style.display = 'block';
+                    console.error(error);
+                }
+            }
+
+            function playVideo(index) {
+                if (videoUrls.length === 0) return;
+                const url = videoUrls[index];
+                currentIndex = index;
+                resetZoom();
+                isLoading = true;
+
+                viewCounter = generateRandomViews();
+                updateVideoInfo(
+                    videoNames[index] || `Short Video ${index+1}`,
+                    viewCounter,
+                    generateRandomTime()
+                );
+
+                downloadBtn.href = url;
+                downloadBtn.download = `${videoNames[index] || 'short_video'}.mp4`;
+
+                playPauseBtn.classList.remove('show');
+                playPauseBtn.classList.add('hide-anim');
+
+                video.src = url;
+                video.load();
+                video.volume = 1;
+                video.muted = false;
+                isPlaying = true;
+
+                video.oncanplay = function() {
+                    isLoading = false;
+                    video.play().catch(() => {});
+                    playIcon.className = 'fas fa-pause';
+                    playPauseBtn.classList.remove('show');
+                    playPauseBtn.classList.add('hide-anim');
+                    clearTimeout(btnTimeout);
+                };
+
+                video.onerror = function() {
+                    isLoading = false;
+                    console.warn('ভিডিও লোডে সমস্যা, পরবর্তী ভিডিও লোড হচ্ছে...');
+                    setTimeout(() => {
+                        loadRandomVideo();
+                    }, 1200);
+                };
+            }
+
+            function loadRandomVideo() {
+                if (videoUrls.length === 0) return;
+                if (isLoading) return;
+
+                if (lockedIndices.size >= videoUrls.length) {
+                    lockedIndices = new Set();
+                    console.log('🔄 সব ভিডিও দেখা শেষ, নতুন চক্র শুরু হচ্ছে...');
+                }
+
+                let availableIndices = [];
+                for (let i = 0; i < videoUrls.length; i++) {
+                    if (!lockedIndices.has(i)) {
+                        availableIndices.push(i);
+                    }
+                }
+
+                if (availableIndices.length === 0) {
+                    lockedIndices = new Set();
+                    availableIndices = [];
+                    for (let i = 0; i < videoUrls.length; i++) {
+                        availableIndices.push(i);
+                    }
+                }
+
+                const randomIndex = availableIndices[Math.floor(Math.random() * availableIndices.length)];
+                lockedIndices.add(randomIndex);
+                currentIndex = randomIndex;
+                
+                console.log(`📹 দেখা হয়েছে ${lockedIndices.size}/${videoUrls.length}, বর্তমান: ${randomIndex+1}`);
+                playVideo(randomIndex);
+            }
+
+            // ============================================
+            // 🚀 শুরু করুন
+            // ============================================
+            fetchVideoUrls();
+
+            console.log('🎬 RS Short ভিডিও প্লেয়ার রেডি!');
+            console.log(`📂 সোর্স: ${OWNER}/${REPO}/releases/tag/${TAG}`);
+            console.log('📌 উপরে/নিচে সোয়াইপ বা ↑↓ কী দিয়ে ভিডিও চেঞ্জ হয়');
+            console.log('👆 ভিডিও ট্যাপ করলে পজ/প্লে');
+
+        })();
+    </script>
+</body>
+</html>

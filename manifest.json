@@ -1,0 +1,24 @@
+{
+  "name": "Rs Live Tv",
+  "short_name": "Rs Live",
+  "description": "Watch Live TV, Movies, Cricket & More",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.postimg.cc/mD1VCt2C/RS-Live.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
